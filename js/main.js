@@ -84,7 +84,7 @@ function growsnake() {
   }
 }
 
-function checksnake(x, y) {  //check if we hit ourself
+function checksnake() {  //check if we hit ourself
   var myButt = 0;
   for (var i = 1; i < sizeSnake; i++) {
     if (xSnake[sizeSnake] == xSnake[i] && ySnake[sizeSnake] == ySnake[i]) {
