@@ -1,5 +1,14 @@
 d = document;
 
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          function( callback ){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+
 var TO_RADIANS = Math.PI/180; 
 function drawRotatedImage(image, x, y, angle) { 
   var c = document.getElementById("myCanvas");
@@ -152,20 +161,23 @@ initPlay = function () {
     mainloop();
   }
 }
+render = function () {drawsnake();}
+
 mainloop = function () {
-  checksnake();
   movesnake();
   growsnake();
-  drawsnake();
+  checksnake();
+//  drawsnake();
   if (dead == 0) {
-    var t = setTimeout(function () {
-      mainloop()
-    }, 50)
+
+requestAnimFrame(render)
+setTimeout( mainloop, 1000 / 30 )
+
   } //if we're alive run it again!
   else {  
   nowPlaying = 0; 
   img.src = 'res/deadSnakeHead.gif'; //and with a dead head
-  drawRotatedImage(img, xSnake[sizeSnake], ySnake[sizeSnake], headAngle)
+  drawRotatedImage(img, xSnake[sizeSnake-1], ySnake[sizeSnake-1], headAngle)
   if (ourScore > highScore) {highScore = ourScore;}
   document.body.className = "dead";
   } //if not end the game
