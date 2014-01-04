@@ -1,36 +1,37 @@
 d = document;
 
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       ||
-          window.webkitRequestAnimationFrame ||
-          window.mozRequestAnimationFrame    ||
-          function( callback ){
-            window.setTimeout(callback, 1000 / 60);
-          };
+window.requestAnimFrame = (function () {
+  return window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    function (callback) {
+      window.setTimeout(callback, 1000 / 60);
+  };
 })();
 
-var TO_RADIANS = Math.PI/180; 
-function drawRotatedImage(image, x, y, angle) { 
+var TO_RADIANS = Math.PI / 180;
+
+function drawRotatedImage(image, x, y, angle) {
   var c = document.getElementById("myCanvas");
   var ctx = c.getContext("2d");
- 
-	// save the current co-ordinate system 
-	// before we screw with it
-	ctx.save(); 
- 
-	// move to the middle of where we want to draw our image
-	ctx.translate((10 * x) + 5,(10 * y) +5);
- 
-	// rotate around that point, converting our 
-	// angle from degrees to radians 
-	ctx.rotate(angle * TO_RADIANS);
- 
-	// draw it up and to the left by half the width
-	// and height of the image 
-	ctx.drawImage(image, -(image.width/2), -(image.height/2));
- 
-	// and restore the co-ords to how they were when we began
-	ctx.restore(); 
+
+  // save the current co-ordinate system 
+  // before we screw with it
+  ctx.save();
+
+  // move to the middle of where we want to draw our image
+  ctx.translate((10 * x) + 5, (10 * y) + 5);
+
+  // rotate around that point, converting our 
+  // angle from degrees to radians 
+  ctx.rotate(angle * TO_RADIANS);
+
+  // draw it up and to the left by half the width
+  // and height of the image 
+  ctx.drawImage(image, -(image.width / 2), -(image.height / 2));
+
+  // and restore the co-ords to how they were when we began
+  ctx.restore();
 }
 
 function drawbox(x, y, color) {
@@ -54,15 +55,18 @@ function drawapple() {
 function drawsnake() {
   for (var i = 0; i < sizeSnake; i++) {
     var segColor = "#65b388";
-    if (i % 3 == 1) {var segColor = "#8fb363";}
+    if (i % 3 == 1) {
+      var segColor = "#8fb363";
+    }
     drawbox(xSnake[i], ySnake[i], segColor); //draw his whole body in our lovely sea serpent green 
   }
   drawbox(xSnake[0], ySnake[0], "#ffffff"); //erase his last link    
   // and draw his cute new snake head!
-  drawRotatedImage(img, xSnake[sizeSnake], ySnake[sizeSnake], headAngle)
+  drawRotatedImage(img, xSnake[sizeSnake], ySnake[sizeSnake], headAngle);
+
 }
 
-function movesnake () {
+function movesnake() {
   travelX = newtravelX;
   travelY = newtravelY;
   var x = (xSnake[sizeSnake] + travelX) % 51;
@@ -93,7 +97,7 @@ function growsnake() {
   }
 }
 
-function checksnake(x, y) {  //check if we hit ourself
+function checksnake(x, y) { //check if we hit ourself
   var myButt = 0;
   for (var i = 1; i < sizeSnake; i++) {
     if (xSnake[sizeSnake] == xSnake[i] && ySnake[sizeSnake] == ySnake[i]) {
@@ -118,7 +122,7 @@ function checkKey(e) {
     newtravelX = -1; //west
     newtravelY = 0;
     headAngle = 270;
-    
+
   } else if (e.keyCode == '39' && travelX != -1) {
     newtravelX = 1; //east
     newtravelY = 0
@@ -131,11 +135,12 @@ d.addEventListener("DOMContentLoaded", function () { // Initial setup on page lo
   nowPlaying = 0;
   highScore = 0;
   ourScore = 0;
-  img = new Image(); 
+  img = new Image();
   initPlay();
+
 });
 
-initPlay = function () { 
+initPlay = function () {
   if (nowPlaying == 0) { //initialize variables for a new game if we're not playing
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
@@ -147,9 +152,9 @@ initPlay = function () {
     sizeSnake = 3; //at the ripe young size of 2 ;D
     growSnake = 5; //make that 5
     travelX = 1; //and traveling east
-    travelY = 0; 
-    newtravelX = 1; 
-    newtravelY = 0;  //with a buffer so we don't get two keypresses between iterations and insta-die
+    travelY = 0;
+    newtravelX = 1;
+    newtravelY = 0; //with a buffer so we don't get two keypresses between iterations and insta-die
     ourScore = 0;
     drawapple();
     nowPlaying = 1;
@@ -161,24 +166,28 @@ initPlay = function () {
     mainloop();
   }
 }
-render = function () {drawsnake();}
+
 
 mainloop = function () {
   movesnake();
   growsnake();
   checksnake();
-//  drawsnake();
+  //  drawsnake();
   if (dead == 0) {
 
-requestAnimFrame(render)
-setTimeout( mainloop, 1000 / 30 )
+    requestAnimFrame(drawsnake);
+    setTimeout(mainloop, 1000 / 30);
 
   } //if we're alive run it again!
-  else {  
-  nowPlaying = 0; 
-  img.src = 'res/deadSnakeHead.gif'; //and with a dead head
-  drawRotatedImage(img, xSnake[sizeSnake-1], ySnake[sizeSnake-1], headAngle)
-  if (ourScore > highScore) {highScore = ourScore;}
-  document.body.className = "dead";
+  else {
+    nowPlaying = 0;
+    img.src = 'res/deadSnakeHead.gif'; //and with a dead head (delay so the image can load before drawing)
+    setTimeout(function () {
+      drawRotatedImage(img, xSnake[sizeSnake - 1], ySnake[sizeSnake - 1], headAngle)
+    }, 200);
+    if (ourScore > highScore) {
+      highScore = ourScore;
+    }
+    document.body.className = "dead";
   } //if not end the game
 }
